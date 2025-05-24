@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fashion E-commerce</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 700;
+      color: #222;
+    }
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 240px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .card img {
+      width: 200px;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.2em;
+      color: #111;
+    }
+    .card p {
+      margin: 0 0 15px 0;
+      color: #666;
+      font-weight: 600;
+      font-size: 1em;
+    }
+    .card button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1em;
+      width: 100%;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .card button:hover {
+      background-color: #0056b3;
+    }
+    .payment-section {
+      margin-top: 50px;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .payment-section h2 {
+      margin-top: 0;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.8em;
+      color: #222;
+      margin-bottom: 25px;
+    }
+    .payment-options {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+    .payment-options label {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1em;
+      color: #444;
+      padding: 10px 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+      user-select: none;
+      flex: 1;
+      text-align: center;
+      background-color: #fafafa;
+    }
+    .payment-options input[type="radio"] {
+      display: none;
+    }
+    .payment-options input[type="radio"]:checked + label {
+      border-color: #007bff;
+      background-color: #e6f0ff;
+      color: #0056b3;
+      box-shadow: 0 0 8px rgba(0,123,255,0.4);
+    }
+    #payBtn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 14px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.3em;
+      font-weight: 700;
+      width: 100%;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 12px rgba(40,167,69,0.4);
+    }
+    #payBtn:hover {
+      background-color: #1e7e34;
+      box-shadow: 0 6px 16px rgba(30,126,52,0.6);
+    }
+    #qrCode {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fashion E-commerce Store</h1>
+  <div class="products" id="products"></div>
+
+  <div class="payment-section">
+    <h2>Make a Payment</h2>
+    <div class="payment-options">
+      <input type="radio" id="bankA" name="bank" value="Bank A" checked />
+      <label for="bankA">Bank A</label>
+
+      <input type="radio" id="bankB" name="bank" value="Bank B" />
+      <label for="bankB">Bank B</label>
+
+      <input type="radio" id="bankC" name="bank" value="Bank C" />
+      <label for="bankC">Bank C</label>
+    </div>
+    <button id="payBtn">Pay Now</button>
+    <div id="qrCode"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    const products = [
+      { id: 1, name: "Classic T-Shirt", price: 19.99, image: "https://via.placeholder.com/200?text=T-Shirt" },
+      { id: 2, name: "Blue Jeans", price: 49.99, image: "https://via.placeholder.com/200?text=Jeans" },
+      { id: 3, name: "Sneakers", price: 69.99, image: "https://via.placeholder.com/200?text=Sneakers" },
+      { id: 4, name: "Leather Jacket", price: 129.99, image: "https://via.placeholder.com/200?text=Jacket" },
+      { id: 5, name: "Baseball Cap", price: 14.99, image: "https://via.placeholder.com/200?text=Cap" },
+      { id: 6, name: "Summer Dress", price: 59.99, image: "https://via.placeholder.com/200?text=Dress" },
+      { id: 7, name: "Formal Shirt", price: 39.99, image: "https://via.placeholder.com/200?text=Shirt" },
+      { id: 8, name: "Running Shoes", price: 89.99, image: "https://via.placeholder.com/200?text=Running+Shoes" },
+      { id: 9, name: "Wool Scarf", price: 24.99, image: "https://via.placeholder.com/200?text=Scarf" },
+      { id: 10, name: "Sunglasses", price: 29.99, image: "https://via.placeholder.com/200?text=Sunglasses" }
+    ];
+
+    const productsContainer = document.getElementById('products');
+
+    products.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" />
+        <h3>${product.name}</h3>
+        <p>Price: $${product.price.toFixed(2)}</p>
+        <button data-id="${product.id}">Add to Cart</button>
+      `;
+      productsContainer.appendChild(card);
+    });
+
+    let cart = [];
+
+    productsContainer.addEventListener('click', e => {
+      if (e.target.tagName === 'BUTTON') {
+        const id = parseInt(e.target.getAttribute('data-id'));
+        const product = products.find(p => p.id === id);
+        if (product) {
+          cart.push(product);
+          alert(${product.name} added to cart.);
+        }
+      }
+    });
+
+    const payBtn = document.getElementById('payBtn');
+    const qrCodeContainer = document.getElementById('qrCode');
+
+    payBtn.addEventListener('click', () => {
+      if (cart.length === 0) {
+        alert('Your cart is empty. Please add products before paying.');
+        return;
+      }
+      const selectedBank = document.querySelector('input[name="bank"]:checked').value;
+      const totalAmount = cart.reduce((sum, item) => sum + item.price, 0).toFixed(2);
+
+      // Create payment data string
+      const paymentData = JSON.stringify({
+        bank: selectedBank,
+        amount: totalAmount,
+        items: cart.map(item => item.name)
+      });
+
+      // Clear previous QR code
+      qrCodeContainer.innerHTML = '';
+
+      // Generate QR code with high accuracy (using error correction level 'H')
+      QRCode.toCanvas(paymentData, { errorCorrectionLevel: 'H', scale: 8 }, function (error, canvas) {
+        if (error) {
+          console.error(error);
+          alert('Failed to generate QR code.');
+          return;
+        }
+        qrCodeContainer.appendChild(canvas);
+      });
+    });
+  </script>
+</body>
+</html>
