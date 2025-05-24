@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Chatbot</title>
+  <style>
+    @keyframes moveBackground {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 1000px 0;
+      }
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    #app {
+      width: 400px;
+      height: 600px;
+      background: rgba(0, 0, 0, 0.85);
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    .chat-window {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      border-bottom: 1px solid #00fff7;
+      color: #e0f7fa;
+    }
+    .message {
+      margin-bottom: 15px;
+      max-width: 70%;
+      padding: 10px 15px;
+      border-radius: 20px;
+      clear: both;
+      font-size: 14px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    .user-message {
+      background: #00bcd4;
+      color: #000;
+      float: right;
+      border-bottom-right-radius: 0;
+      box-shadow: 0 0 8px #00bcd4;
+    }
+    .bot-message {
+      background: #004d40;
+      color: #a7ffeb;
+      float: left;
+      border-bottom-left-radius: 0;
+      box-shadow: 0 0 8px #004d40;
+    }
+    .input-area {
+      display: flex;
+      padding: 15px;
+      background: #002f2f;
+      border-top: 1px solid #00fff7;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 25px;
+      outline: none;
+      background: #004d40;
+      color: #e0f7fa;
+      box-shadow: inset 0 0 5px #00bcd4;
+      transition: background 0.3s ease;
+    }
+    input[type="text"]:focus {
+      background: #00796b;
+    }
+    button {
+      margin-left: 10px;
+      padding: 12px 25px;
+      font-size: 16px;
+      border: none;
+      background: #00bcd4;
+      color: #000;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00bcd4;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #00838f;
+      box-shadow: 0 0 15px #00838f;
+    }
+    /* Animated background lines */
+    #background-lines {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .line {
+      position: absolute;
+      width: 2px;
+      height: 100vh;
+      background: rgba(0, 255, 255, 0.15);
+      animation: slideDown 10s linear infinite;
+    }
+    @keyframes slideDown {
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(100%);
+      }
+    }
+  </style>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body>
+  <div id="background-lines">
+    <div class="line" style="left: 10%; animation-delay: 0s; height: 80vh;"></div>
+    <div class="line" style="left: 25%; animation-delay: 2s; height: 90vh;"></div>
+    <div class="line" style="left: 40%; animation-delay: 4s; height: 70vh;"></div>
+    <div class="line" style="left: 55%; animation-delay: 1s; height: 85vh;"></div>
+    <div class="line" style="left: 70%; animation-delay: 3s; height: 75vh;"></div>
+    <div class="line" style="left: 85%; animation-delay: 5s; height: 80vh;"></div>
+  </div>
+  <div id="app">
+    <div class="chat-window" ref="chatWindow">
+      <div v-for="(msg, index) in messages" :key="index" :class="['message', msg.sender === 'user' ? 'user-message' : 'bot-message']">
+        {{ msg.text }}
+      </div>
+    </div>
+    <div class="input-area">
+      <input type="text" v-model="input" @keyup.enter="sendMessage" placeholder="Type your message..." />
+      <button @click="sendMessage">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, nextTick } = Vue;
+
+    createApp({
+      data() {
+        return {
+          input: '',
+          messages: [
+            { sender: 'bot', text: 'Hello! How can I help you today?' }
+          ]
+        };
+      },
+      methods: {
+        sendMessage() {
+          if (!this.input.trim()) return;
+          this.messages.push({ sender: 'user', text: this.input });
+          const userMessage = this.input.toLowerCase();
+          this.input = '';
+          this.botReply(userMessage);
+          this.scrollToBottom();
+        },
+        botReply(userMessage) {
+          let reply = "I'm not sure how to respond to that.";
+          if (userMessage.includes('hello') || userMessage.includes('hi')) {
+            reply = 'Hi there! How can I assist you?';
+          } else if (userMessage.includes('weather')) {
+            reply = 'I can help you with weather info. Please provide a city name.';
+          } else if (userMessage.includes('bye')) {
+            reply = 'Goodbye! Have a great day!';
+          }
+          setTimeout(() => {
+            this.messages.push({ sender: 'bot', text: reply });
+            this.scrollToBottom();
+          }, 1000);
+        },
+        scrollToBottom() {
+          nextTick(() => {
+            const chatWindow = this.$refs.chatWindow;
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+          });
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
